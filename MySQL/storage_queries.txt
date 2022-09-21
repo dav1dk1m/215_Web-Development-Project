@@ -1,0 +1,189 @@
+Name: DongYun Kim (dkt886)
+Student #: 200405213
+CS215-094
+Assignment #4: Micro-Polling Website – Database Design & Implementation
+===========================================================================
+
+
+/********************************** CREATE TABLE - NEW USER INFO **********************************/
+
+mysql> CREATE TABLE user (
+    -> user_id INT NOT NULL AUTO_INCREMENT,
+    -> user_email VARCHAR(255) NOT NULL,
+    -> user_name VARCHAR(255) NOT NULL,
+    -> user_password VARCHAR(8) NOT NULL,
+    -> user_avatar VARCHAR(255) NOT NULL,
+    -> PRIMARY KEY (user_id)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> desc user;
++---------------+--------------+------+-----+---------+----------------+
+| Field         | Type         | Null | Key | Default | Extra          |
++---------------+--------------+------+-----+---------+----------------+
+| user_id       | int          | NO   | PRI | NULL    | auto_increment |
+| user_email    | varchar(255) | NO   |     | NULL    |                |
+| user_name     | varchar(255) | NO   |     | NULL    |                |
+| user_password | varchar(8)   | NO   |     | NULL    |                |
+| user_avatar   | varchar(255) | NO   |     | NULL    |                |
++---------------+--------------+------+-----+---------+----------------+
+5 rows in set (0.00 sec)
+
+************ SAVE THE NEW USER INFORMATION IN THE DATABASE ************
+
+mysql> INSERT INTO user (user_id, user_email, user_name, user_password, user_avatar)
+    -> VALUES ('123', 'test1@uregina.ca', 'test1','12345678', 'profile1.png');
+
+mysql> INSERT INTO user (user_id, user_email, user_name, user_password, user_avatar)
+    -> VALUES ('456', 'test2,uregina.ca', 'test2', '87654321', 'profile2.png');
+
+mysql> INSERT INTO user (user_id, user_email, user_name, user_password, user_avatar)
+    -> VALUES ('789', 'test3@uregina.ca', 'test3','73241285', 'profile3.png');
+
+mysql> SELECT * FROM user;
++---------+------------------+-----------+---------------+--------------+
+| user_id | user_email       | user_name | user_password | user_avatar  |
++---------+------------------+-----------+---------------+--------------+
+|     123 | test1@uregina.ca | test1     | 12345678      | profile1.png |
+|     456 | test2,uregina.ca | test2     | 87654321      | profile2.png |
+|     789 | test3@uregina.ca | test3     | 73241285      | profile3.png |
++---------+------------------+-----------+---------------+--------------+
+3 rows in set (0.00 sec)
+
+
+
+
+/********************************** CREATE TABLE - POLL INFO **********************************/
+
+mysql> CREATE TABLE poll ( poll_id INT NOT NULL AUTO_INCREMENT, user_id INT NOT NULL, question VARCHAR(200) NOT NULL, 
+    -> a1 VARCHAR(50) NOT NULL, a2 VARCHAR(50) NOT NULL, a3 VARCHAR(50) , a4 VARCHAR(50), a5 VARCHAR(50), 
+    -> open_dt DATETIME NOT NULL, close_dt DATETIME NOT NULL,  PRIMARY KEY (poll_id), FOREIGN KEY (user_id) REFERENCES user (user_id) );
+
+mysql> desc poll;
++----------+--------------+------+-----+---------+----------------+
+| Field    | Type         | Null | Key | Default | Extra          |
++----------+--------------+------+-----+---------+----------------+
+| poll_id  | int          | NO   | PRI | NULL    | auto_increment |
+| user_id  | int          | NO   | MUL | NULL    |                |
+| question | varchar(200) | NO   |     | NULL    |                |
+| a1       | varchar(50)  | NO   |     | NULL    |                |
+| a2       | varchar(50)  | NO   |     | NULL    |                |
+| a3       | varchar(50)  | YES  |     | NULL    |                |
+| a4       | varchar(50)  | YES  |     | NULL    |                |
+| a5       | varchar(50)  | YES  |     | NULL    |                |
+| open_dt  | datetime     | NO   |     | NULL    |                |
+| close_dt | datetime     | NO   |     | NULL    |                |
++----------+--------------+------+-----+---------+----------------+
+
+
+************SAVE THE QUESTION AND THE ANSWER ALTERNATIVES IN THE DATABASE************
+
+mysql> INSERT INTO poll (poll_id, user_id, question, a1, a2, open_dt, close_dt)
+    -> VALUES ('111111', '123', 'What is your favorite CS course?', 'CS210', 'CS215', '2022-08-01', '2022-08-10');
+
+mysql> INSERT INTO poll (poll_id, user_id, question, a1, a2, a3, a4, open_dt, close_dt) 
+    -> VALUE ('22222', '456', 'Favorite Programming Language', 'HTML', 'JS', 'C++', 'PYTHON', '2022-08-04 15:00:00', '2022-08-09 19:30:00');
+
+mysql> INSERT INTO poll (poll_id, user_id, question, a1, a2, open_dt, close_dt) 
+    -> VALUE ('33333', '789', 'Favorite phone brand', 'Apple', 'Samsung', '2022-08-03 18:00:00', '2022-08-05 19:00:00');
+
+mysql> INSERT INTO poll (poll_id, user_id, question, a1, a2, open_dt, close_dt)
+    -> VALUE ('444', '123', 'Sample Qusetion', 'A', 'B', '2022-08-12', '2022-08-13');
+
+mysql> INSERT INTO poll (poll_id, user_id, question, a1, a2, a3, a4, open_dt, close_dt)
+    -> VALUE ('555', '456', 'Sample Qusetion 2', 'C', 'D', 'E', 'F', '2022-08-10', '2022-08-12');
+
+mysql> SELECT * FROM poll ORDER BY open_dt DESC;
++---------+---------+----------------------------------+-------+---------+------+--------+------+---------------------+---------------------+
+| poll_id | user_id | question                         | a1    | a2      | a3   | a4     | a5   | open_dt             | close_dt            |
++---------+---------+----------------------------------+-------+---------+------+--------+------+---------------------+---------------------+
+|     555 |     456 | Sample Qusetion 2                | C     | D       | E    | F      | NULL | 2022-08-10 00:00:00 | 2022-08-12 00:00:00 |
+|     444 |     123 | Sample Qusetion                  | A     | B       | NULL | NULL   | NULL | 2022-08-05 00:00:00 | 2022-08-06 00:00:00 |
+|   22222 |     456 | Favorite Programming Language    | HTML  | JS      | C++  | PYTHON | NULL | 2022-08-04 15:00:00 | 2022-08-09 19:30:00 |
+|   33333 |     789 | Favorite phone brand             | Apple | Samsung | NULL | NULL   | NULL | 2022-08-03 18:00:00 | 2022-08-05 19:00:00 |
+|  111111 |     123 | What is your favorite CS course? | CS210 | CS215   | NULL | NULL   | NULL | 2022-08-01 00:00:00 | 2022-08-10 00:00:00 |
++---------+---------+----------------------------------+-------+---------+------+--------+------+---------------------+---------------------+
+
+
+
+/********************************** CREATE TABLE - VOTE **********************************/
+
+mysql> CREATE TABLE vote ( 
+    -> vote_id INT NOT NULL AUTO_INCREMENT,  
+    -> poll_id INT NOT NULL, user_id INT NOT NULL, vote VARCHAR(50) NOT NULL, 
+    -> PRIMARY KEY (vote_id), 
+    -> FOREIGN KEY (poll_id) REFERENCES poll (poll_id), FOREIGN KEY (user_id) REFERENCES user (user_id) );\
+
+mysql> ALTER TABLE vote ADD vote_date DATETIME;
+
+mysql> desc vote;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| vote_id   | int         | NO   | PRI | NULL    | auto_increment |
+| poll_id   | int         | NO   | MUL | NULL    |                |
+| user_id   | int         | NO   | MUL | NULL    |                |
+| vote      | varchar(50) | NO   |     | NULL    |                |
+| vote_date | datetime    | YES  |     | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+
+
+************ SAVE THE DATA FOR THIS PARTICULAR VOTE IN THE DATABASE ************
+
+---POLL VOTE ON poll_id = 555----
+mysql> INSERT INTO vote (poll_id, user_id, vote) VALUES ('555', '456', 'C');
+
+mysql> INSERT INTO vote (poll_id, user_id, vote) VALUES ('555', '123', 'C');
+
+mysql> INSERT INTO vote (poll_id, user_id, vote) VALUES ('555', '789', 'C');
+
+mysql> INSERT INTO vote (poll_id, user_id, vote) VALUES ('555', '456', 'C');
+
+mysql> UPDATE vote
+    -> SET vote_date='2022-08-11'
+    -> WHERE poll_id='555';
+
+
+---POLL VOTE ON poll_id = 444---
+mysql> INSERT INTO vote (poll_id, user_id, vote) VALUES ('444', '789', 'A');
+
+mysql> INSERT INTO vote (poll_id, user_id, vote) VALUES ('444', '123', 'B');
+
+mysql> INSERT INTO vote (poll_id, user_id, vote) VALUES ('444', '456', 'A');
+
+UPDATE vote SET vote_date='2022-08-06' WHERE poll_id='444';
+
+---POLL VOTE ON poll_id = 111111---
+mysql> INSERT INTO vote (poll_id, user_id, vote) VALUES ('111111', '456', 'CS210');
+
+mysql> INSERT INTO vote (poll_id, user_id, vote) VALUES ('111111', '123', 'CS215');
+
+mysql> INSERT INTO vote (poll_id, user_id, vote) VALUES ('111111', '789', 'CS215');
+
+UPDATE vote SET vote_date='2022-08-02 13:30:00' WHERE poll_id='111111';
+
+---POLL VOTE ON poll_id = 33333---
+mysql> INSERT INTO vote (poll_id, user_id, vote, vote_date) VALUES ('33333', '456', 'Apple', '2022-08-03 14:00:00');
+
+mysql> INSERT INTO vote (poll_id, user_id, vote, vote_date) VALUES ('33333', '123', 'Samsung','2022-08-04 15:00:00');
+
+mysql> INSERT INTO vote (poll_id, user_id, vote, vote_date) VALUES ('33333', '789', 'APPLE' , '2022-08-05 13:00:00');
+
+mysql> SELECT * FROM vote;
++---------+---------+---------+---------+---------------------+
+| vote_id | poll_id | user_id | vote    | vote_date           |
++---------+---------+---------+---------+---------------------+
+|       1 |     555 |     456 | C       | 2022-08-11 00:00:00 |
+|       2 |     555 |     123 | C       | 2022-08-11 00:00:00 |
+|       3 |     555 |     789 | C       | 2022-08-11 00:00:00 |
+|       4 |     555 |     456 | C       | 2022-08-11 00:00:00 |
+|       5 |     444 |     789 | A       | 2022-08-06 00:00:00 |
+|       6 |     444 |     123 | B       | 2022-08-06 00:00:00 |
+|       7 |     444 |     456 | A       | 2022-08-06 00:00:00 |
+|       8 |  111111 |     456 | CS210   | 2022-08-02 13:30:00 |
+|       9 |  111111 |     123 | CS215   | 2022-08-02 13:30:00 |
+|      10 |  111111 |     789 | CS215   | 2022-08-02 13:30:00 |
+|      11 |   33333 |     456 | Apple   | 2022-08-03 14:00:00 |
+|      12 |   33333 |     123 | Samsung | 2022-08-04 15:00:00 |
+|      13 |   33333 |     789 | APPLE   | 2022-08-05 13:00:00 |
++---------+---------+---------+---------+---------------------+

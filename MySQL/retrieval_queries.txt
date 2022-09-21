@@ -1,0 +1,162 @@
+/******************** a. MAIN PAGE *************************/
+
+mysql> INSERT INTO poll (poll_id, user_id, question, a1, a2, open_dt, close_dt)
+    -> VALUES ('111111', '123', 'What is your favorite CS course?', 'CS210', 'CS215', '2022-08-01', '2022-08-10');
+
+mysql> INSERT INTO poll (poll_id, user_id, question, a1, a2, a3, a4, open_dt, close_dt) 
+    -> VALUE ('22222', '456', 'Favorite Programming Language', 'HTML', 'JS', 'C++', 'PYTHON', '2022-08-04 15:00:00', '2022-08-09 19:30:00');
+
+mysql> INSERT INTO poll (poll_id, user_id, question, a1, a2, open_dt, close_dt) 
+    -> VALUE ('33333', '789', 'Favorite phone brand', 'Apple', 'Samsung', '2022-08-03 18:00:00', '2022-08-05 19:00:00');
+
+mysql> INSERT INTO poll (poll_id, user_id, question, a1, a2, a3, a4, open_dt, close_dt)
+    -> VALUE ('555', '456', 'Sample Qusetion 2', 'C', 'D', 'E', 'F', '2022-08-10', '2022-08-12');
+
+mysql> INSERT INTO poll (poll_id, user_id, question, a1, a2, open_dt, close_dt)
+    -> VALUE ('444', '123', 'Sample Qusetion', 'A', 'B', '2022-08-12', '2022-08-13');
+
+
+
+*****Retrieve the five most recent active poll (qustion and answers), ordered with most recent first.*****
+
+mysql> SELECT * FROM poll ORDER BY open_dt DESC;
++---------+---------+----------------------------------+-------+---------+------+--------+------+---------------------+---------------------+
+| poll_id | user_id | question                         | a1    | a2      | a3   | a4     | a5   | open_dt             | close_dt            |
++---------+---------+----------------------------------+-------+---------+------+--------+------+---------------------+---------------------+
+|     555 |     456 | Sample Qusetion 2                | C     | D       | E    | F      | NULL | 2022-08-10 00:00:00 | 2022-08-12 00:00:00 |
+|     444 |     123 | Sample Qusetion                  | A     | B       | NULL | NULL   | NULL | 2022-08-05 00:00:00 | 2022-08-06 00:00:00 |
+|   22222 |     456 | Favorite Programming Language    | HTML  | JS      | C++  | PYTHON | NULL | 2022-08-04 15:00:00 | 2022-08-09 19:30:00 |
+|   33333 |     789 | Favorite phone brand             | Apple | Samsung | NULL | NULL   | NULL | 2022-08-03 18:00:00 | 2022-08-05 19:00:00 |
+|  111111 |     123 | What is your favorite CS course? | CS210 | CS215   | NULL | NULL   | NULL | 2022-08-01 00:00:00 | 2022-08-10 00:00:00 |
++---------+---------+----------------------------------+-------+---------+------+--------+------+---------------------+---------------------+
+
+
+
+/******************** b. LOGIN FORM *************************/
+
+***** Given the username and password, retrieve the user ID, matching screen name, and avatar graphic *****
+
+mysql> SELECT user_id, user_name, user_avatar FROM user
+    -> WHERE (user_name='test1') and (user_password='12345678');
++---------+-----------+--------------+
+| user_id | user_name | user_avatar  |
++---------+-----------+--------------+
+|     123 | test1     | profile1.png |
++---------+-----------+--------------+
+
+***** if the username and password pair do not match, return an empty result set *****
+
+mysql> SELECT user_id, user_name, user_avatar FROM user
+    -> WHERE (user_name='test1') and (user_password='000000');
+Empty set (0.00 sec)
+
+
+
+/******************** c. POLL MANAGEMENT PAGE *************************/
+
+-------- user_id = 123 --------
+mysql> SELECT poll.user_id, poll.question, 
+    -> poll.a1, SUM(case when poll.a1 = vote.vote then 1 else 0 end) AS total_vote1, 
+    -> poll.a2, SUM(case when poll.a2 = vote.vote then 1 else 0 end) AS total_vote2, 
+    -> poll.a3, SUM(case when poll.a3 = vote.vote then 1 else 0 end) AS total_vote3, 
+    -> poll.a4, SUM(case when poll.a4 = vote.vote then 1 else 0 end) AS total_vote4, 
+    -> poll.a5, SUM(case when poll.a5 = vote.vote then 1 else 0 end) AS total_vote5, 
+    -> MAX(vote.vote_date) AS most_recent 
+    -> FROM poll LEFT JOIN vote ON (poll.poll_id=vote.poll_id) 
+    -> WHERE poll.user_id='123' GROUP BY poll.user_id, poll.question, poll.a1, poll.a2, poll.a3, poll.a4, poll.a5;
++---------+----------------------------------+-------+-------------+-------+-------------+------+-------------+------+-------------+------+-------------+---------------------+
+| user_id | question                         | a1    | total_vote1 | a2    | total_vote2 | a3   | total_vote3 | a4   | total_vote4 | a5   | total_vote5 | most_recent         |
++---------+----------------------------------+-------+-------------+-------+-------------+------+-------------+------+-------------+------+-------------+---------------------+
+|     123 | Sample Qusetion                  | A     |           2 | B     |           1 | NULL |           0 | NULL |           0 | NULL |           0 | 2022-08-06 00:00:00 |
+|     123 | What is your favorite CS course? | CS210 |           1 | CS215 |           2 | NULL |           0 | NULL |           0 | NULL |           0 | 2022-08-02 13:30:00 |
++---------+----------------------------------+-------+-------------+-------+-------------+------+-------------+------+-------------+------+-------------+---------------------+
+
+-------- user_id = 456 --------
+mysql> SELECT poll.user_id, poll.question, poll.a1, SUM(case when poll.a1 = vote.vote then 1 else 0 end) AS total_vote1, poll.a2, SUM(case when poll.a2 = vote.vote then 1 else 0 end) AS total_vote2, poll.a3, 
+    -> SUM(case when poll.a3 = vote.vote then 1 else 0 end) AS total_vote3, poll.a4, SUM(case when poll.a4 = vote.vote then 1 else 0 end) AS total_vote4, poll.a5, SUM(case when poll.a5 = vote.vote then 1 else 0 end) AS total_vote5, 
+    -> MAX(vote.vote_date) AS most_recent FROM poll LEFT JOIN vote ON (poll.poll_id=vote.poll_id) WHERE poll.user_id='456' GROUP BY poll.user_id, poll.question, poll.a1, poll.a2, poll.a3, poll.a4, poll.a5;
++---------+-------------------------------+------+-------------+----+-------------+------+-------------+--------+-------------+------+-------------+---------------------+
+| user_id | question                      | a1   | total_vote1 | a2 | total_vote2 | a3   | total_vote3 | a4     | total_vote4 | a5   | total_vote5 | most_recent         |
++---------+-------------------------------+------+-------------+----+-------------+------+-------------+--------+-------------+------+-------------+---------------------+
+|     456 | Sample Qusetion 2             | C    |           4 | D  |           0 | E    |           0 | F      |           0 | NULL |           0 | 2022-08-11 00:00:00 |
+|     456 | Favorite Programming Language | HTML |           0 | JS |           0 | C++  |           0 | PYTHON |           0 | NULL |           0 | NULL                |
++---------+-------------------------------+------+-------------+----+-------------+------+-------------+--------+-------------+------+-------------+---------------------+
+
+
+
+/******************** d. POLL VOTE PAGE *************************/
+
+
+***** given a specific poll ID, retrieve the question and answer alternatives*****
+
+mysql> SELECT question, a1, a2, a3, a4, a5 FROM poll
+    -> WHERE poll_id='555';
++-------------------+----+----+------+------+------+
+| question          | a1 | a2 | a3   | a4   | a5   |
++-------------------+----+----+------+------+------+
+| Sample Qusetion 2 | C  | D  | E    | F    | NULL |
++-------------------+----+----+------+------+------+
+
+mysql> SELECT question, a1, a2, a3, a4, a5 FROM poll WHERE poll_id='444';
++-----------------+----+----+------+------+------+
+| question        | a1 | a2 | a3   | a4   | a5   |
++-----------------+----+----+------+------+------+
+| Sample Qusetion | A  | B  | NULL | NULL | NULL |
++-----------------+----+----+------+------+------+
+
+mysql> SELECT question, a1, a2, a3, a4, a5 FROM poll WHERE poll_id='22222';
++-------------------------------+------+----+------+--------+------+
+| question                      | a1   | a2 | a3   | a4     | a5   |
++-------------------------------+------+----+------+--------+------+
+| Favorite Programming Language | HTML | JS | C++  | PYTHON | NULL |
++-------------------------------+------+----+------+--------+------+
+
+mysql> SELECT question, a1, a2, a3, a4, a5 FROM poll WHERE poll_id='33333';
++----------------------+-------+---------+------+------+------+
+| question             | a1    | a2      | a3   | a4   | a5   |
++----------------------+-------+---------+------+------+------+
+| Favorite phone brand | Apple | Samsung | NULL | NULL | NULL |
++----------------------+-------+---------+------+------+------+
+
+mysql> SELECT question, a1, a2, a3, a4, a5 FROM poll WHERE poll_id='111111';
++----------------------------------+-------+-------+------+------+------+
+| question                         | a1    | a2    | a3   | a4   | a5   |
++----------------------------------+-------+-------+------+------+------+
+| What is your favorite CS course? | CS210 | CS215 | NULL | NULL | NULL |
++----------------------------------+-------+-------+------+------+------+
+
+
+
+/******************** e. POLL RESULTS PAGE *************************/
+
+***** Given a specific poll ID, retrieve the question, answers, number of votes for each alternative, and the date/time of the most recent vote *****
+
+
+mysql> SELECT question, a1, SUM(case when poll.a1 = vote.vote then 1 else 0 end) AS total_vote1, a2, SUM(case when poll.a2 = vote.vote then 1 else 0 end) AS total_vote2, a3, 
+    -> SUM(case when poll.a3 = vote.vote then 1 else 0 end) AS total_vote3, a4, SUM(case when poll.a4 = vote.vote then 1 else 0 end) AS total_vote4, a5, SUM(case when poll.a5 = vote.vote then 1 else 0 end) AS total_vote5, 
+    -> MAX(vote.vote_date) AS most_recent FROM poll LEFT JOIN vote ON (poll.poll_id=vote.poll_id) WHERE poll.poll_id='111111' GROUP BY poll.user_id, poll.question, poll.a1, poll.a2, poll.a3, poll.a4, poll.a5;
++----------------------------------+-------+-------------+-------+-------------+------+-------------+------+-------------+------+-------------+---------------------+
+| question                         | a1    | total_vote1 | a2    | total_vote2 | a3   | total_vote3 | a4   | total_vote4 | a5   | total_vote5 | most_recent         |
++----------------------------------+-------+-------------+-------+-------------+------+-------------+------+-------------+------+-------------+---------------------+
+| What is your favorite CS course? | CS210 |           1 | CS215 |           2 | NULL |           0 | NULL |           0 | NULL |           0 | 2022-08-02 13:30:00 |
++----------------------------------+-------+-------------+-------+-------------+------+-------------+------+-------------+------+-------------+---------------------+
+
+
+mysql> SELECT question, a1, SUM(case when poll.a1 = vote.vote then 1 else 0 end) AS total_vote1, a2, SUM(case when poll.a2 = vote.vote then 1 else 0 end) AS total_vote2, a3,  
+    -> SUM(case when poll.a3 = vote.vote then 1 else 0 end) AS total_vote3, a4, SUM(case when poll.a4 = vote.vote then 1 else 0 end) AS total_vote4, a5, SUM(case when poll.a5 = vote.vote then 1 else 0 end) AS total_vote5,  
+    -> MAX(vote.vote_date) AS most_recent FROM poll LEFT JOIN vote ON (poll.poll_id=vote.poll_id) WHERE poll.poll_id='444' GROUP BY poll.user_id, poll.question, poll.a1, poll.a2, poll.a3, poll.a4, poll.a5;
++-----------------+----+-------------+----+-------------+------+-------------+------+-------------+------+-------------+---------------------+
+| question        | a1 | total_vote1 | a2 | total_vote2 | a3   | total_vote3 | a4   | total_vote4 | a5   | total_vote5 | most_recent         |
++-----------------+----+-------------+----+-------------+------+-------------+------+-------------+------+-------------+---------------------+
+| Sample Qusetion | A  |           2 | B  |           1 | NULL |           0 | NULL |           0 | NULL |           0 | 2022-08-06 00:00:00 |
++-----------------+----+-------------+----+-------------+------+-------------+------+-------------+------+-------------+---------------------+
+
+
+mysql> SELECT question, a1, SUM(case when poll.a1 = vote.vote then 1 else 0 end) AS total_vote1, a2, SUM(case when poll.a2 = vote.vote then 1 else 0 end) AS total_vote2, a3,  
+    -> SUM(case when poll.a3 = vote.vote then 1 else 0 end) AS total_vote3, a4, SUM(case when poll.a4 = vote.vote then 1 else 0 end) AS total_vote4, a5, SUM(case when poll.a5 = vote.vote then 1 else 0 end) AS total_vote5,  
+    -> MAX(vote.vote_date) AS most_recent FROM poll LEFT JOIN vote ON (poll.poll_id=vote.poll_id) WHERE poll.poll_id='33333' GROUP BY poll.user_id, poll.question, poll.a1, poll.a2, poll.a3, poll.a4, poll.a5;
++----------------------+-------+-------------+---------+-------------+------+-------------+------+-------------+------+-------------+---------------------+
+| question             | a1    | total_vote1 | a2      | total_vote2 | a3   | total_vote3 | a4   | total_vote4 | a5   | total_vote5 | most_recent         |
++----------------------+-------+-------------+---------+-------------+------+-------------+------+-------------+------+-------------+---------------------+
+| Favorite phone brand | Apple |           2 | Samsung |           1 | NULL |           0 | NULL |           0 | NULL |           0 | 2022-08-05 13:00:00 |
++----------------------+-------+-------------+---------+-------------+------+-------------+------+-------------+------+-------------+---------------------+
