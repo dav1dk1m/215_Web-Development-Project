@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>
+   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+   <title>
+      New Poll
+   </title>
+
+   <link rel="stylesheet" href="style.css" type="text/css" />
+
+   <script type="text/javascript" src="validate.js"></script> 
+</head>
+
+
+<body>
+   <header>
+      <h1>DK's Micro Polling</h1>
+      <div class="homeButton">
+         <a href="index.html"> Home </a>
+      </div>
+   </header>
+
+
+   <div class="sign-up">
+      <h2>Create your New Poll</h2>
+
+            <form id="NewPoll" method="post" action="">
+               <table id="newPoll">
+      
+                  <tr>
+                     <td>&nbsp;</td>
+                     <td><label id="msg_q" class="err_msg"></label></td>
+                  </tr>
+                  <tr>
+                     <td>Question: </td>
+                     <td> <input type="text" id="questionInput" size="50"></input>
+                        <td><span id="question"></span> </td>
+                     </td>
+                  </tr>
+
+                  <tr>
+                     <td>&nbsp;</td>
+                     <td></td>
+                  </tr>
+                  <tr>
+                     <td></td>
+                     <td> ONLY UP TO 5 ANSWERS! MUST HAVE 2 ANSWERS!</td>
+                  </tr>
+      
+                  <tr>
+                     <td>&nbsp;</td>
+                     <td><label id="msg_a1" class="err_msg"></label></td>
+                  </tr>
+                  <tr>
+                     <td>Answer 1: </td>
+                     <td> <input type="text" name="a1" id="ansInput1" size="50" /></input>
+                        <td><span id=ans1></span> </td>
+                     </td>
+                  </tr>
+
+                  <tr>
+                     <td>&nbsp;</td>
+                     <td><label id="msg_a2" class="err_msg"></label></td>
+                  </tr>
+                  <tr>
+                     <td>Answer 2: </td>
+                     <td> <input type="text" name="a2" id="ansInput2" size="50" /></input>
+                        <td><span id=ans2></span> </td>
+                     </td>
+                  </tr>
+
+                  <tr>
+                     <td>&nbsp;</td>
+                     <td><label id="msg_a3" class="err_msg"></label></td>
+                  </tr>
+                  <tr>
+                     <td>Answer 3: </td>
+                     <td> <input type="text" id="ansInput3" name="a3" size="50" /></td>
+                     <td><span id="ans3"></span></td>
+                  </tr>
+
+                  <tr>
+                     <td>&nbsp;</td>
+                     <td><label id="msg_a4" class="err_msg"></label></td>
+                  </tr>
+                  <tr>
+                     <td>Answer 4: </td>
+                     <td> <input type="text" id="ansInput4" name="a4" size="50" /></td>
+                     <td><span id="ans4"></span></td>
+                  </tr>
+
+                  <tr>
+                     <td>&nbsp;</td>
+                     <td><label id="msg_a5" class="err_msg"></label></td>
+                  </tr>
+                  <tr>
+                     <td>Answer 5: </td>
+                     <td> <input type="text" id="ansInput5" name="a5" size="50" /></td>
+                     <td><span id="ans5"></span></td>
+                  </tr>
+
+
+                  <tr>
+                     <td>&nbsp;</td>
+                     <td><label id="msg_d1" class="err_msg"></label></td>
+                  </tr>
+                  <tr>
+                     <td>Date Open: </td>
+                     <td> <input type="date" name="d1" size="30" /> </td>
+         
+                  </tr>
+
+                  <tr>
+                     <td>&nbsp;</td>
+                     <td><label id="msg_t1" class="err_msg"></label></td>
+                  </tr>
+                  <tr>
+                     <td>Time Open:</td>
+                     <td> <input type="time" name="t1" size="30" /> </td>
+         
+                  </tr>
+
+                  <tr>
+                     <td>&nbsp;</td>
+                     <td><label id="msg_d2" class="err_msg"></label></td>
+                  </tr>
+                  <tr>
+                     <td>Date Close: </td>
+                     <td> <input type="date" name="d2" size="30" /></td>
+                  </tr>
+                  <tr>
+                     <td>&nbsp;</td>
+                     <td><label id="msg_t2" class="err_msg"></label></td>
+                  </tr>
+                  <tr>
+                     <td> Time Close </td>
+                     <td> <input type="time" name="t2" size="30" /> </td>
+                  </tr>
+      
+               </table>
+
+               <br />
+      
+               <input type="submit" value="SUBMIT" />
+   </form>
+
+   <script type ="text/javascript" src="newpoll-r.js"></script>
+
+   </div>
+
+   <!-- footer-->
+   <footer>
+      &#169;2022 DongYun All rights reserved. <br />
+      <a
+         href="https://validator.w3.org/check?uri=http%3A%2F%2Fwww.webdev.cs.uregina.ca%2F~dkt886/a3/pollCreation.html">
+         Validate pollCreation.html </a>
+   </footer>
+
+
+</body>
+
+</html>
